@@ -1,4 +1,4 @@
-# Isometric 2.5D
+# Isometric
 
 A Figma plugin that projects selected 2D layers into 2.5D isometric views. Set a custom angle, pick a direction, preview the result, then apply. Reset flattens the layer back to 2D in place.
 
@@ -46,12 +46,12 @@ npm run lint
 
 Figma runs `code.js`. Reload the plugin after UI or build changes.
 
-| File | Role |
-| --- | --- |
-| `manifest.json` | Plugin metadata |
-| `code.ts` | Main thread: selection, SSR matrices, apply / reset |
-| `ui.html` | Panel UI, preview, and message passing |
-| `icon.svg` / `icon-128.png` | Publish assets (not used by the local manifest) |
+| File                        | Role                                                |
+| --------------------------- | --------------------------------------------------- |
+| `manifest.json`             | Plugin metadata                                     |
+| `code.ts`                   | Main thread: selection, SSR matrices, apply / reset |
+| `ui.html`                   | Panel UI, preview, and message passing              |
+| `icon.svg` / `icon-128.png` | Publish assets (not used by the local manifest)     |
 
 ## How the math works
 
