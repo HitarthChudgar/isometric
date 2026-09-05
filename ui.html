@@ -17,6 +17,7 @@
       --bg-hover: var(--figma-color-bg-hover, #ececec);
       --bg-pressed: var(--figma-color-bg-pressed, #e5e5e5);
       --bg-selected: var(--figma-color-bg-selected, #e5f4ff);
+      --border: var(--figma-color-border, #e5e5e5);
     }
 
     * {
@@ -63,8 +64,27 @@
       font-weight: 500;
     }
 
+    .presets {
+      display: flex;
+      gap: 4px;
+    }
+
+    .preset {
+      min-width: 36px;
+      min-height: 32px;
+      padding-inline: 8px;
+      background: var(--bg-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .preset.is-active {
+      background: var(--bg-selected);
+      color: var(--text);
+    }
+
     .field input {
-      width: 64px;
+      width: 48px;
+      margin-inline-start: auto;
       min-height: 32px;
       padding: 0 10px;
       border: none;
@@ -73,7 +93,7 @@
       color: inherit;
       font: inherit;
       font-variant-numeric: tabular-nums;
-      text-align: end;
+      text-align: start;
       outline: none;
     }
 
@@ -138,8 +158,8 @@
     .dir-well {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 2px;
-      padding: 3px;
+      gap: 0;
+      overflow: hidden;
       border-radius: var(--radius-md);
       background: var(--bg-secondary);
       flex-shrink: 0;
@@ -164,9 +184,21 @@
       white-space: nowrap;
     }
 
+    .dir-well button {
+      border-radius: 0;
+    }
+
+    .dir-well button:nth-child(odd) {
+      border-inline-end: 1px solid var(--border);
+    }
+
+    .dir-well button:nth-child(-n + 2) {
+      border-block-end: 1px solid var(--border);
+    }
+
     .dir-well button.is-active {
-      background: var(--bg);
-      box-shadow: 0 0 0 1.5px var(--brand);
+      background: var(--bg-selected);
+      color: var(--text);
     }
 
     .reset {
@@ -180,7 +212,7 @@
       flex-shrink: 0;
       stroke: currentColor;
       fill: none;
-      stroke-width: 1.5;
+      stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
@@ -191,15 +223,18 @@
     }
 
     @media (hover: hover) {
-      .field input:hover {
+      .field input:hover,
+      .preset:hover {
         background: var(--bg-hover);
       }
 
-      .dir-well button:hover,
-      .dir-well button.is-active:hover {
+      .preset.is-active:hover {
+        background: var(--bg-selected);
+      }
+
+      .dir-well button:hover {
         background: var(--bg-selected);
         color: var(--text);
-        box-shadow: none;
       }
 
       .reset:hover {
@@ -251,6 +286,11 @@
     <div class="field">
       <label for="angle">Angle</label>
       <input id="angle" type="number" inputmode="decimal" value="30" step="1" />
+      <div class="presets" role="group" aria-label="Angle presets">
+        <button type="button" class="preset" data-angle="15">15°</button>
+        <button type="button" class="preset is-active" data-angle="30" aria-pressed="true">30°</button>
+        <button type="button" class="preset" data-angle="45">45°</button>
+      </div>
     </div>
 
     <div class="preview-stage" id="preview-stage" role="img" aria-labelledby="preview-meta">
@@ -261,30 +301,30 @@
 
     <div class="dir-well" id="direction-grid" role="group" aria-label="Projection">
       <button type="button" data-direction="top-left" aria-pressed="true">
-        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
-          <path d="M11.5 4.5H4.5V11.5" />
-          <path d="M11.5 11.5L4.5 4.5" />
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 17V7h10" />
+          <path d="m17 17-10-10" />
         </svg>
         Top left
       </button>
       <button type="button" data-direction="top-right" aria-pressed="false">
-        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
-          <path d="M4.5 4.5H11.5V11.5" />
-          <path d="M4.5 11.5L11.5 4.5" />
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 7h10v10" />
+          <path d="M7 17 17 7" />
         </svg>
         Top right
       </button>
       <button type="button" data-direction="left" aria-pressed="false">
-        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
-          <path d="M12 8H4" />
-          <path d="M7 5L4 8L7 11" />
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m12 19-7-7 7-7" />
+          <path d="M19 12H5" />
         </svg>
         Left
       </button>
       <button type="button" data-direction="right" aria-pressed="false">
-        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
-          <path d="M4 8H12" />
-          <path d="M9 5L12 8L9 11" />
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
         </svg>
         Right
       </button>
@@ -307,6 +347,7 @@
     const previewEmpty = document.getElementById("preview-empty");
     const previewMeta = document.getElementById("preview-meta");
     const directionButtons = document.querySelectorAll("[data-direction]");
+    const presetButtons = document.querySelectorAll("[data-angle]");
 
     let committedDirection = "top-left";
     let previewDirection = "top-left";
@@ -316,6 +357,15 @@
     function readAngle() {
       const angle = parseFloat(angleInput.value);
       return Number.isFinite(angle) ? angle : 30;
+    }
+
+    function syncPresets() {
+      const angle = readAngle();
+      presetButtons.forEach(function (button) {
+        const isActive = Number(button.getAttribute("data-angle")) === angle;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
     }
 
     function post(pluginMessage) {
@@ -366,6 +416,7 @@
 
     function updatePreview() {
       const angle = readAngle();
+      syncPresets();
       const matrix = buildDirectionalMatrix(previewDirection, angle);
       const a = matrix[0][0];
       const c = matrix[0][1];
@@ -493,6 +544,13 @@
 
     document.getElementById("reset").addEventListener("click", function () {
       post({ type: "reset" });
+    });
+
+    presetButtons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        angleInput.value = button.getAttribute("data-angle");
+        updatePreview();
+      });
     });
 
     angleInput.addEventListener("input", updatePreview);
