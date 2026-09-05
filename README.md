@@ -1,40 +1,58 @@
-Below are the steps to get your plugin running. You can also find instructions at:
+# Isometric 2.5D
 
-  https://www.figma.com/plugin-docs/plugin-quickstart-guide/
+A Figma plugin that projects selected 2D layers into 2.5D isometric views. Set a custom angle, pick a direction, preview the result, then apply. Reset flattens the layer back to 2D in place.
 
-This plugin template uses Typescript and NPM, two standard tools in creating JavaScript applications.
+## Features
 
-First, download Node.js which comes with NPM. This will allow you to install TypeScript and other
-libraries. You can find the download link here:
+- Custom angle (default 30°)
+- Four projections: Top left, Top right, Left, Right
+- Live preview of the current selection before apply
+- Multi-selection support
+- Visual-center correction so layers transform in place
+- Reset transform back to a flat identity matrix
 
-  https://nodejs.org/en/download/
+## Install in Figma
 
-Next, install TypeScript using the command:
+1. Install dependencies and build:
 
-  npm install -g typescript
+   ```bash
+   npm install
+   npm run build
+   ```
 
-Finally, in the directory of your plugin, get the latest type definitions for the plugin API by running:
+2. In the Figma desktop app: **Plugins → Development → Import plugin from manifest…**
+3. Select `manifest.json` in this folder.
+4. Select one or more layers, then run **Isometric 2.5D**.
 
-  npm install --save-dev @figma/plugin-typings
+Local / Development plugins always show Figma’s default `</>` icon. A custom mark is uploaded as `icon-128.png` when you publish.
 
-If you are familiar with JavaScript, TypeScript will look very familiar. In fact, valid JavaScript code
-is already valid Typescript code.
+## Usage
 
-TypeScript adds type annotations to variables. This allows code editors such as Visual Studio Code
-to provide information about the Figma API while you are writing code, as well as help catch bugs
-you previously didn't notice.
+1. Select a layer (or several).
+2. Set **Angle**.
+3. Hover or focus a direction to preview the projection.
+4. Click a direction to apply it to the selection.
+5. **Reset transform** flattens the layer back to 2D.
 
-For more information, visit https://www.typescriptlang.org/
+If nothing is selected, the plugin notifies: `Please select a layer to transform.`
 
-Using TypeScript requires a compiler to convert TypeScript (code.ts) into JavaScript (code.js)
-for the browser to run.
+## Develop
 
-We recommend writing TypeScript code using Visual Studio code:
+```bash
+npm install
+npm run watch    # rebuild code.js on save
+npm run lint
+```
 
-1. Download Visual Studio Code if you haven't already: https://code.visualstudio.com/.
-2. Open this directory in Visual Studio Code.
-3. Compile TypeScript to JavaScript: Run the "Terminal > Run Build Task..." menu item,
-    then select "npm: watch". You will have to do this again every time
-    you reopen Visual Studio Code.
+Figma runs `code.js`. Reload the plugin after UI or build changes.
 
-That's it! Visual Studio Code will regenerate the JavaScript file every time you save.
+| File | Role |
+| --- | --- |
+| `manifest.json` | Plugin metadata |
+| `code.ts` | Main thread: selection, SSR matrices, apply / reset |
+| `ui.html` | Panel UI, preview, and message passing |
+| `icon.svg` / `icon-128.png` | Publish assets (not used by the local manifest) |
+
+## How the math works
+
+The angle is converted to radians. Each direction is a Scale–Skew–Rotate matrix written to `node.relativeTransform`. The visual bounding-box center is measured before and after, then `x` / `y` are adjusted so the layer does not jump.
