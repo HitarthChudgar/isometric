@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8" />
   <style>
     :root {
-      --radius: 6px;
+      --radius-sm: 8px;
+      --radius-md: 10px;
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --brand: var(--figma-color-bg-brand, #0c8ce9);
+      --brand-text: var(--figma-color-text-brand, #0c8ce9);
     }
 
     * {
@@ -17,13 +21,14 @@
     html,
     body {
       width: 260px;
-      height: 348px;
+      height: 304px;
       overflow: hidden;
       background: var(--figma-color-bg, #ffffff);
       color: var(--figma-color-text, #1e1e1e);
       font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       font-size: 11px;
       line-height: 16px;
+      font-weight: 500;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -32,7 +37,7 @@
       flex-direction: column;
       height: 100%;
       padding: 12px;
-      gap: 8px;
+      gap: 10px;
     }
 
     .field {
@@ -40,61 +45,67 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      min-height: 28px;
+      min-height: 32px;
       flex-shrink: 0;
     }
 
     .field label {
       color: var(--figma-color-text-secondary, #6b6b6b);
       font-weight: 500;
-      letter-spacing: 0.01em;
     }
 
     .field input {
-      width: 72px;
-      height: 28px;
-      padding: 0 8px;
-      border: 1px solid var(--figma-color-border, #e5e5e5);
-      border-radius: var(--radius);
+      width: 64px;
+      height: 32px;
+      padding: 0 10px;
+      border: none;
+      border-radius: var(--radius-sm);
       background: var(--figma-color-bg-secondary, #f5f5f5);
-      color: var(--figma-color-text, #1e1e1e);
+      color: inherit;
       font: inherit;
       font-variant-numeric: tabular-nums;
       text-align: right;
       outline: none;
-      transition: border-color 120ms var(--ease-out), box-shadow 120ms var(--ease-out);
+      transition: box-shadow 120ms var(--ease-out), background-color 120ms var(--ease-out);
     }
 
     .field input:hover {
-      border-color: var(--figma-color-border-strong, #cfcfcf);
+      background: var(--figma-color-bg-hover, #ececec);
     }
 
     .field input:focus {
-      border-color: var(--figma-color-bg-brand, #0d99ff);
-      box-shadow: 0 0 0 1px var(--figma-color-bg-brand, #0d99ff);
+      background: var(--figma-color-bg-secondary, #f5f5f5);
+      box-shadow: 0 0 0 2px var(--brand);
     }
 
-    .preview-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: var(--figma-color-text-secondary, #6b6b6b);
-      font-weight: 500;
-      flex-shrink: 0;
+    input[type="number"] {
+      appearance: textfield;
+      -moz-appearance: textfield;
     }
 
-    #preview-meta {
-      font-variant-numeric: tabular-nums;
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      appearance: none;
+      margin: 0;
     }
 
     .preview-stage {
       position: relative;
-      height: 118px;
-      border: 1px solid var(--figma-color-border, #e5e5e5);
-      border-radius: var(--radius);
+      height: 112px;
+      border-radius: var(--radius-md);
       background: var(--figma-color-bg-secondary, #f5f5f5);
       overflow: hidden;
       flex-shrink: 0;
+    }
+
+    #preview-meta {
+      position: absolute;
+      right: 8px;
+      bottom: 6px;
+      z-index: 1;
+      color: var(--figma-color-text-tertiary, #8c8c8c);
+      font-variant-numeric: tabular-nums;
+      pointer-events: none;
     }
 
     #preview-img,
@@ -117,88 +128,89 @@
     .fallback {
       width: 72px;
       height: 56px;
-      border: 1px solid var(--figma-color-border, #e5e5e5);
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       background: var(--figma-color-bg, #ffffff);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
-    .grid {
+    .dir-well {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: 28px 28px;
-      gap: 6px;
+      grid-template-rows: 32px 32px;
+      gap: 2px;
+      padding: 3px;
+      border-radius: var(--radius-md);
+      background: var(--figma-color-bg-secondary, #f5f5f5);
       flex-shrink: 0;
     }
 
     button {
       appearance: none;
-      border: 1px solid var(--figma-color-border, #e5e5e5);
-      border-radius: var(--radius);
-      background: var(--figma-color-bg-secondary, #f5f5f5);
-      color: var(--figma-color-text, #1e1e1e);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: inherit;
       font: inherit;
-      font-weight: 500;
       cursor: pointer;
       outline: none;
       transition:
         background-color 120ms var(--ease-out),
-        border-color 120ms var(--ease-out),
-        transform 100ms var(--ease-out);
+        color 120ms var(--ease-out),
+        box-shadow 120ms var(--ease-out);
     }
 
-    button:hover,
-    button.is-active {
+    .dir-well button:hover {
       background: var(--figma-color-bg-hover, #ececec);
-      border-color: var(--figma-color-bg-brand, #0d99ff);
+    }
+
+    .dir-well button.is-active {
+      background: var(--figma-color-bg-selected, #e5f4ff);
+      color: var(--brand-text);
+      box-shadow: 0 1px 2px rgba(12, 140, 233, 0.12);
     }
 
     button:focus-visible {
-      border-color: var(--figma-color-bg-brand, #0d99ff);
-      box-shadow: 0 0 0 1px var(--figma-color-bg-brand, #0d99ff);
+      box-shadow: 0 0 0 2px var(--brand);
     }
 
-    button:active {
-      background: var(--figma-color-bg-pressed, #e5e5e5);
-      transform: scale(0.98);
+    .icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .reset {
       flex-shrink: 0;
       height: 32px;
-      border-color: transparent;
-      background: var(--figma-color-bg-brand, #0d99ff);
-      color: var(--figma-color-text-onbrand, #ffffff);
-      font-weight: 600;
+      background: var(--figma-color-bg-secondary, #f5f5f5);
+      color: var(--figma-color-text, #1e1e1e);
     }
 
-    .reset:hover,
-    .reset.is-active {
-      background: var(--figma-color-bg-brand-hover, #007be5);
-      border-color: transparent;
+    .reset:hover {
+      background: var(--figma-color-bg-hover, #ececec);
     }
 
     .reset:active {
-      background: var(--figma-color-bg-brand-pressed, #0070cc);
-    }
-
-    .divider {
-      height: 1px;
-      background: var(--figma-color-border, #e5e5e5);
-      flex-shrink: 0;
+      background: var(--figma-color-bg-pressed, #e5e5e5);
     }
 
     @media (prefers-reduced-motion: reduce) {
       * {
         transition: none !important;
       }
-
-      button:active {
-        transform: none;
-      }
     }
   </style>
 </head>
+
 <body>
   <div class="app">
     <div class="field">
@@ -206,31 +218,50 @@
       <input id="angle" type="number" value="30" step="1" />
     </div>
 
-    <div class="preview-head">
-      <span>Preview</span>
-      <span id="preview-meta">Top-Left · 30°</span>
-    </div>
     <div class="preview-stage" id="preview-stage">
       <div id="preview-fallback" class="fallback"></div>
       <img id="preview-img" alt="" hidden />
+      <span id="preview-meta">Top left · 30°</span>
     </div>
 
-    <div class="grid" id="direction-grid">
-      <button type="button" data-direction="top-left">Top-Left</button>
-      <button type="button" data-direction="top-right">Top-Right</button>
-      <button type="button" data-direction="left">Left</button>
-      <button type="button" data-direction="right">Right</button>
+    <div class="dir-well" id="direction-grid">
+      <button type="button" data-direction="top-left">
+        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M11.5 4.5H4.5V11.5" />
+          <path d="M11.5 11.5L4.5 4.5" />
+        </svg>
+        Top left
+      </button>
+      <button type="button" data-direction="top-right">
+        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M4.5 4.5H11.5V11.5" />
+          <path d="M4.5 11.5L11.5 4.5" />
+        </svg>
+        Top right
+      </button>
+      <button type="button" data-direction="left">
+        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M12 8H4" />
+          <path d="M7 5L4 8L7 11" />
+        </svg>
+        Left
+      </button>
+      <button type="button" data-direction="right">
+        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M4 8H12" />
+          <path d="M9 5L12 8L9 11" />
+        </svg>
+        Right
+      </button>
     </div>
 
-    <div class="divider"></div>
-
-    <button type="button" class="reset" id="reset">Reset / Flatten Layout</button>
+    <button type="button" class="reset" id="reset">Reset</button>
   </div>
 
   <script>
     const DIRECTION_LABELS = {
-      "top-left": "Top-Left",
-      "top-right": "Top-Right",
+      "top-left": "Top left",
+      "top-right": "Top right",
       left: "Left",
       right: "Right"
     };
@@ -322,7 +353,7 @@
 
       const boundsW = Math.max(maxX - minX, 1);
       const boundsH = Math.max(maxY - minY, 1);
-      const pad = 18;
+      const pad = 20;
       const scale = Math.min(
         (previewStage.clientWidth - pad) / boundsW,
         (previewStage.clientHeight - pad) / boundsH
@@ -422,4 +453,5 @@
     updatePreview();
   </script>
 </body>
+
 </html>

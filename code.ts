@@ -1,8 +1,8 @@
 figma.showUI(__html__, {
   width: 260,
-  height: 348,
+  height: 304,
   themeColors: true,
-  title: "Isometric 2.5D",
+  title: "Isometric",
 });
 
 type Direction = "top-left" | "top-right" | "left" | "right";
@@ -36,8 +36,14 @@ function toRadians(degrees: number): number {
 
 function multiplyLinear(a: LinearMatrix, b: LinearMatrix): LinearMatrix {
   return [
-    [a[0][0] * b[0][0] + a[0][1] * b[1][0], a[0][0] * b[0][1] + a[0][1] * b[1][1]],
-    [a[1][0] * b[0][0] + a[1][1] * b[1][0], a[1][0] * b[0][1] + a[1][1] * b[1][1]],
+    [
+      a[0][0] * b[0][0] + a[0][1] * b[1][0],
+      a[0][0] * b[0][1] + a[0][1] * b[1][1],
+    ],
+    [
+      a[1][0] * b[0][0] + a[1][1] * b[1][0],
+      a[1][0] * b[0][1] + a[1][1] * b[1][1],
+    ],
   ];
 }
 
@@ -64,8 +70,17 @@ function rotateMatrix(radians: number): LinearMatrix {
   ];
 }
 
-function composeSSR(sx: number, sy: number, kx: number, ky: number, rotation: number): LinearMatrix {
-  return multiplyLinear(rotateMatrix(rotation), multiplyLinear(skewMatrix(kx, ky), scaleMatrix(sx, sy)));
+function composeSSR(
+  sx: number,
+  sy: number,
+  kx: number,
+  ky: number,
+  rotation: number,
+): LinearMatrix {
+  return multiplyLinear(
+    rotateMatrix(rotation),
+    multiplyLinear(skewMatrix(kx, ky), scaleMatrix(sx, sy)),
+  );
 }
 
 function safeCot(theta: number): number {
@@ -84,7 +99,10 @@ function safeTan(theta: number): number {
   return Math.sin(theta) / cos;
 }
 
-function buildDirectionalMatrix(direction: Direction, angle: number): LinearMatrix {
+function buildDirectionalMatrix(
+  direction: Direction,
+  angle: number,
+): LinearMatrix {
   const theta = toRadians(angle);
   const cos = Math.cos(theta);
   const sin = Math.sin(theta);
@@ -111,7 +129,9 @@ function buildDirectionalMatrix(direction: Direction, angle: number): LinearMatr
   }
 }
 
-function getVisualCenter(node: TransformableNode): { x: number; y: number } | null {
+function getVisualCenter(
+  node: TransformableNode,
+): { x: number; y: number } | null {
   const box = node.absoluteBoundingBox;
   if (!box) {
     return null;
@@ -122,27 +142,43 @@ function getVisualCenter(node: TransformableNode): { x: number; y: number } | nu
   };
 }
 
-function applyWorldDelta(node: TransformableNode, worldDx: number, worldDy: number): void {
+function applyWorldDelta(
+  node: TransformableNode,
+  worldDx: number,
+  worldDy: number,
+): void {
   const parent = node.parent;
-  if (!parent || parent.type === "PAGE" || parent.type === "DOCUMENT" || !("absoluteTransform" in parent)) {
+  if (
+    !parent ||
+    parent.type === "PAGE" ||
+    parent.type === "DOCUMENT" ||
+    !("absoluteTransform" in parent)
+  ) {
     node.x += worldDx;
     node.y += worldDy;
     return;
   }
 
   const parentTransform = parent.absoluteTransform;
-  const det = parentTransform[0][0] * parentTransform[1][1] - parentTransform[0][1] * parentTransform[1][0];
+  const det =
+    parentTransform[0][0] * parentTransform[1][1] -
+    parentTransform[0][1] * parentTransform[1][0];
   if (Math.abs(det) < 1e-10) {
     node.x += worldDx;
     node.y += worldDy;
     return;
   }
 
-  node.x += (parentTransform[1][1] * worldDx - parentTransform[0][1] * worldDy) / det;
-  node.y += (-parentTransform[1][0] * worldDx + parentTransform[0][0] * worldDy) / det;
+  node.x +=
+    (parentTransform[1][1] * worldDx - parentTransform[0][1] * worldDy) / det;
+  node.y +=
+    (-parentTransform[1][0] * worldDx + parentTransform[0][0] * worldDy) / det;
 }
 
-function preserveVisualCenter(node: TransformableNode, before: { x: number; y: number } | null): void {
+function preserveVisualCenter(
+  node: TransformableNode,
+  before: { x: number; y: number } | null,
+): void {
   if (!before) {
     return;
   }
@@ -153,7 +189,10 @@ function preserveVisualCenter(node: TransformableNode, before: { x: number; y: n
   applyWorldDelta(node, before.x - after.x, before.y - after.y);
 }
 
-function applyLinearTransform(node: TransformableNode, linear: LinearMatrix): void {
+function applyLinearTransform(
+  node: TransformableNode,
+  linear: LinearMatrix,
+): void {
   const before = getVisualCenter(node);
   const current = node.relativeTransform;
   node.relativeTransform = [
