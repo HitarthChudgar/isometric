@@ -1,0 +1,12 @@
+{
+  "name": "Isometric 2.5D",
+  "id": "1677853096168308722",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["none"]
+  }
+}

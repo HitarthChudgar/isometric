@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    :root {
+      --radius: 6px;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 260px;
+      height: 348px;
+      overflow: hidden;
+      background: var(--figma-color-bg, #ffffff);
+      color: var(--figma-color-text, #1e1e1e);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 11px;
+      line-height: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 12px;
+      gap: 8px;
+    }
+
+    .field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 28px;
+      flex-shrink: 0;
+    }
+
+    .field label {
+      color: var(--figma-color-text-secondary, #6b6b6b);
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+
+    .field input {
+      width: 72px;
+      height: 28px;
+      padding: 0 8px;
+      border: 1px solid var(--figma-color-border, #e5e5e5);
+      border-radius: var(--radius);
+      background: var(--figma-color-bg-secondary, #f5f5f5);
+      color: var(--figma-color-text, #1e1e1e);
+      font: inherit;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      outline: none;
+      transition: border-color 120ms var(--ease-out), box-shadow 120ms var(--ease-out);
+    }
+
+    .field input:hover {
+      border-color: var(--figma-color-border-strong, #cfcfcf);
+    }
+
+    .field input:focus {
+      border-color: var(--figma-color-bg-brand, #0d99ff);
+      box-shadow: 0 0 0 1px var(--figma-color-bg-brand, #0d99ff);
+    }
+
+    .preview-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--figma-color-text-secondary, #6b6b6b);
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    #preview-meta {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .preview-stage {
+      position: relative;
+      height: 118px;
+      border: 1px solid var(--figma-color-border, #e5e5e5);
+      border-radius: var(--radius);
+      background: var(--figma-color-bg-secondary, #f5f5f5);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    #preview-img,
+    .fallback {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      transition: transform 180ms var(--ease-out);
+      will-change: transform;
+    }
+
+    #preview-img {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: none;
+    }
+
+    .fallback {
+      width: 72px;
+      height: 56px;
+      border: 1px solid var(--figma-color-border, #e5e5e5);
+      border-radius: 4px;
+      background: var(--figma-color-bg, #ffffff);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 28px 28px;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--figma-color-border, #e5e5e5);
+      border-radius: var(--radius);
+      background: var(--figma-color-bg-secondary, #f5f5f5);
+      color: var(--figma-color-text, #1e1e1e);
+      font: inherit;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+      transition:
+        background-color 120ms var(--ease-out),
+        border-color 120ms var(--ease-out),
+        transform 100ms var(--ease-out);
+    }
+
+    button:hover,
+    button.is-active {
+      background: var(--figma-color-bg-hover, #ececec);
+      border-color: var(--figma-color-bg-brand, #0d99ff);
+    }
+
+    button:focus-visible {
+      border-color: var(--figma-color-bg-brand, #0d99ff);
+      box-shadow: 0 0 0 1px var(--figma-color-bg-brand, #0d99ff);
+    }
+
+    button:active {
+      background: var(--figma-color-bg-pressed, #e5e5e5);
+      transform: scale(0.98);
+    }
+
+    .reset {
+      flex-shrink: 0;
+      height: 32px;
+      border-color: transparent;
+      background: var(--figma-color-bg-brand, #0d99ff);
+      color: var(--figma-color-text-onbrand, #ffffff);
+      font-weight: 600;
+    }
+
+    .reset:hover,
+    .reset.is-active {
+      background: var(--figma-color-bg-brand-hover, #007be5);
+      border-color: transparent;
+    }
+
+    .reset:active {
+      background: var(--figma-color-bg-brand-pressed, #0070cc);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--figma-color-border, #e5e5e5);
+      flex-shrink: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition: none !important;
+      }
+
+      button:active {
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="field">
+      <label for="angle">Angle</label>
+      <input id="angle" type="number" value="30" step="1" />
+    </div>
+
+    <div class="preview-head">
+      <span>Preview</span>
+      <span id="preview-meta">Top-Left · 30°</span>
+    </div>
+    <div class="preview-stage" id="preview-stage">
+      <div id="preview-fallback" class="fallback"></div>
+      <img id="preview-img" alt="" hidden />
+    </div>
+
+    <div class="grid" id="direction-grid">
+      <button type="button" data-direction="top-left">Top-Left</button>
+      <button type="button" data-direction="top-right">Top-Right</button>
+      <button type="button" data-direction="left">Left</button>
+      <button type="button" data-direction="right">Right</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <button type="button" class="reset" id="reset">Reset / Flatten Layout</button>
+  </div>
+
+  <script>
+    const DIRECTION_LABELS = {
+      "top-left": "Top-Left",
+      "top-right": "Top-Right",
+      left: "Left",
+      right: "Right"
+    };
+
+    const angleInput = document.getElementById("angle");
+    const previewStage = document.getElementById("preview-stage");
+    const previewImg = document.getElementById("preview-img");
+    const previewFallback = document.getElementById("preview-fallback");
+    const previewMeta = document.getElementById("preview-meta");
+    const directionButtons = document.querySelectorAll("[data-direction]");
+
+    let committedDirection = "top-left";
+    let previewDirection = "top-left";
+    let previewUrl = null;
+
+    function readAngle() {
+      const angle = parseFloat(angleInput.value);
+      return Number.isFinite(angle) ? angle : 30;
+    }
+
+    function post(pluginMessage) {
+      parent.postMessage({ pluginMessage: pluginMessage }, "*");
+    }
+
+    function toRadians(degrees) {
+      return (degrees * Math.PI) / 180;
+    }
+
+    function multiplyLinear(a, b) {
+      return [
+        [a[0][0] * b[0][0] + a[0][1] * b[1][0], a[0][0] * b[0][1] + a[0][1] * b[1][1]],
+        [a[1][0] * b[0][0] + a[1][1] * b[1][0], a[1][0] * b[0][1] + a[1][1] * b[1][1]]
+      ];
+    }
+
+    function composeSSR(sx, sy, kx, ky) {
+      return multiplyLinear(
+        [[1, kx], [ky, 1]],
+        [[sx, 0], [0, sy]]
+      );
+    }
+
+    function safeDiv(num, den) {
+      return Math.abs(den) < 1e-8 ? 0 : num / den;
+    }
+
+    function buildDirectionalMatrix(direction, angle) {
+      const theta = toRadians(angle);
+      const cos = Math.cos(theta);
+      const sin = Math.sin(theta);
+      const tan = safeDiv(sin, cos);
+      const cot = safeDiv(cos, sin);
+
+      if (direction === "top-left") return composeSSR(cos, sin, -cot, tan);
+      if (direction === "top-right") return composeSSR(cos, sin, cot, -tan);
+      if (direction === "left") return composeSSR(cos, 1, 0, tan);
+      return composeSSR(cos, 1, 0, -tan);
+    }
+
+    function sourceSize() {
+      if (!previewImg.hidden && previewImg.naturalWidth > 0) {
+        return { w: previewImg.naturalWidth, h: previewImg.naturalHeight, el: previewImg };
+      }
+      return { w: 72, h: 56, el: previewFallback };
+    }
+
+    function updatePreview() {
+      const angle = readAngle();
+      const matrix = buildDirectionalMatrix(previewDirection, angle);
+      const a = matrix[0][0];
+      const c = matrix[0][1];
+      const b = matrix[1][0];
+      const d = matrix[1][1];
+      const size = sourceSize();
+      const corners = [[0, 0], [size.w, 0], [size.w, size.h], [0, size.h]];
+      let minX = Infinity;
+      let minY = Infinity;
+      let maxX = -Infinity;
+      let maxY = -Infinity;
+
+      for (let i = 0; i < corners.length; i++) {
+        const x = a * corners[i][0] + c * corners[i][1];
+        const y = b * corners[i][0] + d * corners[i][1];
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
+      }
+
+      const boundsW = Math.max(maxX - minX, 1);
+      const boundsH = Math.max(maxY - minY, 1);
+      const pad = 18;
+      const scale = Math.min(
+        (previewStage.clientWidth - pad) / boundsW,
+        (previewStage.clientHeight - pad) / boundsH
+      );
+      const tx = (previewStage.clientWidth - boundsW * scale) / 2 - minX * scale;
+      const ty = (previewStage.clientHeight - boundsH * scale) / 2 - minY * scale;
+
+      previewImg.style.transform = "none";
+      previewFallback.style.transform = "none";
+      size.el.style.transform =
+        "matrix(" +
+        (a * scale) + ", " +
+        (b * scale) + ", " +
+        (c * scale) + ", " +
+        (d * scale) + ", " +
+        tx + ", " +
+        ty + ")";
+
+      previewMeta.textContent = DIRECTION_LABELS[previewDirection] + " · " + angle + "°";
+
+      directionButtons.forEach(function (button) {
+        button.classList.toggle("is-active", button.getAttribute("data-direction") === previewDirection);
+      });
+    }
+
+    function setPreviewDirection(direction) {
+      previewDirection = direction;
+      updatePreview();
+    }
+
+    function setPreviewBytes(bytes) {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        previewUrl = null;
+      }
+
+      if (!bytes || !bytes.byteLength) {
+        previewImg.hidden = true;
+        previewImg.removeAttribute("src");
+        previewFallback.hidden = false;
+        updatePreview();
+        return;
+      }
+
+      const blob = new Blob([new Uint8Array(bytes)], { type: "image/png" });
+      previewUrl = URL.createObjectURL(blob);
+      previewImg.onload = function () {
+        previewImg.hidden = false;
+        previewFallback.hidden = true;
+        updatePreview();
+      };
+      previewImg.src = previewUrl;
+    }
+
+    directionButtons.forEach(function (button) {
+      const direction = button.getAttribute("data-direction");
+
+      button.addEventListener("pointerenter", function () {
+        setPreviewDirection(direction);
+      });
+
+      button.addEventListener("click", function () {
+        committedDirection = direction;
+        setPreviewDirection(direction);
+        post({
+          type: "transform",
+          angle: readAngle(),
+          direction: direction
+        });
+      });
+    });
+
+    document.getElementById("direction-grid").addEventListener("pointerleave", function () {
+      setPreviewDirection(committedDirection);
+    });
+
+    document.getElementById("reset").addEventListener("click", function () {
+      post({ type: "reset" });
+    });
+
+    angleInput.addEventListener("input", updatePreview);
+    angleInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        angleInput.blur();
+      }
+    });
+
+    window.onmessage = function (event) {
+      const msg = event.data && event.data.pluginMessage;
+      if (!msg) return;
+      if (msg.type === "selection-preview") {
+        setPreviewBytes(msg.bytes);
+      }
+    };
+
+    post({ type: "ready" });
+    updatePreview();
+  </script>
+</body>
+</html>
