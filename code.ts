@@ -1,6 +1,6 @@
 figma.showUI(__html__, {
   width: 260,
-  height: 304,
+  height: 328,
   themeColors: true,
   title: "Isometric",
 });

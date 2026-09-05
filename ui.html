@@ -1,15 +1,22 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <style>
     :root {
       --radius-sm: 8px;
-      --radius-md: 10px;
-      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --radius-md: 11px;
+      --ease-out: cubic-bezier(0.2, 0, 0, 1);
       --brand: var(--figma-color-bg-brand, #0c8ce9);
-      --brand-text: var(--figma-color-text-brand, #0c8ce9);
+      --brand-strong: var(--figma-color-bg-brand-pressed, #0070cc);
+      --text-onbrand: var(--figma-color-text-onbrand, #ffffff);
+      --text: var(--figma-color-text, #1e1e1e);
+      --text-secondary: var(--figma-color-text-secondary, #6b6b6b);
+      --bg: var(--figma-color-bg, #ffffff);
+      --bg-secondary: var(--figma-color-bg-secondary, #f5f5f5);
+      --bg-hover: var(--figma-color-bg-hover, #ececec);
+      --bg-pressed: var(--figma-color-bg-pressed, #e5e5e5);
+      --bg-selected: var(--figma-color-bg-selected, #e5f4ff);
     }
 
     * {
@@ -21,15 +28,16 @@
     html,
     body {
       width: 260px;
-      height: 304px;
+      height: 328px;
       overflow: hidden;
-      background: var(--figma-color-bg, #ffffff);
-      color: var(--figma-color-text, #1e1e1e);
+      background: var(--bg);
+      color: var(--text);
       font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      font-size: 11px;
-      line-height: 16px;
-      font-weight: 500;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.45;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     .app {
@@ -37,7 +45,8 @@
       flex-direction: column;
       height: 100%;
       padding: 12px;
-      gap: 10px;
+      gap: 8px;
+      overflow: hidden;
     }
 
     .field {
@@ -50,32 +59,22 @@
     }
 
     .field label {
-      color: var(--figma-color-text-secondary, #6b6b6b);
+      color: var(--text-secondary);
       font-weight: 500;
     }
 
     .field input {
       width: 64px;
-      height: 32px;
+      min-height: 32px;
       padding: 0 10px;
       border: none;
       border-radius: var(--radius-sm);
-      background: var(--figma-color-bg-secondary, #f5f5f5);
+      background: var(--bg-secondary);
       color: inherit;
       font: inherit;
       font-variant-numeric: tabular-nums;
-      text-align: right;
+      text-align: end;
       outline: none;
-      transition: box-shadow 120ms var(--ease-out), background-color 120ms var(--ease-out);
-    }
-
-    .field input:hover {
-      background: var(--figma-color-bg-hover, #ececec);
-    }
-
-    .field input:focus {
-      background: var(--figma-color-bg-secondary, #f5f5f5);
-      box-shadow: 0 0 0 2px var(--brand);
     }
 
     input[type="number"] {
@@ -93,54 +92,56 @@
       position: relative;
       height: 112px;
       border-radius: var(--radius-md);
-      background: var(--figma-color-bg-secondary, #f5f5f5);
+      background: var(--bg-secondary);
       overflow: hidden;
       flex-shrink: 0;
     }
 
-    #preview-meta {
+    .preview-empty {
       position: absolute;
-      right: 8px;
-      bottom: 6px;
-      z-index: 1;
-      color: var(--figma-color-text-tertiary, #8c8c8c);
-      font-variant-numeric: tabular-nums;
-      pointer-events: none;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      color: var(--text-secondary);
+      text-align: center;
+      text-wrap: pretty;
     }
 
-    #preview-img,
-    .fallback {
-      position: absolute;
-      top: 0;
-      left: 0;
-      transform-origin: 0 0;
-      transition: transform 180ms var(--ease-out);
-      will-change: transform;
+    .preview-empty[hidden] {
+      display: none;
+    }
+
+    .preview-meta {
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
     }
 
     #preview-img {
+      position: absolute;
+      top: 0;
+      inset-inline-start: 0;
       display: block;
       width: auto;
       height: auto;
       max-width: none;
+      transform-origin: 0 0;
+      pointer-events: none;
+      outline: 1px solid rgb(0 0 0 / 0.1);
+      outline-offset: -1px;
     }
 
-    .fallback {
-      width: 72px;
-      height: 56px;
-      border-radius: var(--radius-sm);
-      background: var(--figma-color-bg, #ffffff);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    #preview-img[hidden] {
+      display: none;
     }
 
     .dir-well {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: 32px 32px;
       gap: 2px;
       padding: 3px;
       border-radius: var(--radius-md);
-      background: var(--figma-color-bg-secondary, #f5f5f5);
+      background: var(--bg-secondary);
       flex-shrink: 0;
     }
 
@@ -150,31 +151,27 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
+      min-height: 36px;
+      padding-inline: 6px;
       border: none;
       border-radius: var(--radius-sm);
       background: transparent;
       color: inherit;
       font: inherit;
+      font-weight: 500;
       cursor: pointer;
       outline: none;
-      transition:
-        background-color 120ms var(--ease-out),
-        color 120ms var(--ease-out),
-        box-shadow 120ms var(--ease-out);
-    }
-
-    .dir-well button:hover {
-      background: var(--figma-color-bg-hover, #ececec);
+      white-space: nowrap;
     }
 
     .dir-well button.is-active {
-      background: var(--figma-color-bg-selected, #e5f4ff);
-      color: var(--brand-text);
-      box-shadow: 0 1px 2px rgba(12, 140, 233, 0.12);
+      background: var(--bg);
+      box-shadow: 0 0 0 1.5px var(--brand);
     }
 
-    button:focus-visible {
-      box-shadow: 0 0 0 2px var(--brand);
+    .reset {
+      flex-shrink: 0;
+      background: var(--bg-secondary);
     }
 
     .icon {
@@ -188,65 +185,103 @@
       stroke-linejoin: round;
     }
 
-    .reset {
-      flex-shrink: 0;
-      height: 32px;
-      background: var(--figma-color-bg-secondary, #f5f5f5);
-      color: var(--figma-color-text, #1e1e1e);
+    button:focus-visible,
+    .field input:focus-visible {
+      box-shadow: 0 0 0 2px var(--brand);
     }
 
-    .reset:hover {
-      background: var(--figma-color-bg-hover, #ececec);
+    @media (hover: hover) {
+      .field input:hover {
+        background: var(--bg-hover);
+      }
+
+      .dir-well button:hover,
+      .dir-well button.is-active:hover {
+        background: var(--bg-selected);
+        color: var(--text);
+        box-shadow: none;
+      }
+
+      .reset:hover {
+        background: var(--brand-strong);
+        color: var(--text-onbrand);
+      }
     }
 
-    .reset:active {
-      background: var(--figma-color-bg-pressed, #e5e5e5);
+    @media (prefers-reduced-motion: no-preference) {
+      .field input {
+        transition-property: box-shadow, background-color;
+        transition-duration: 120ms;
+        transition-timing-function: var(--ease-out);
+      }
+
+      button {
+        transition-property: background-color, box-shadow, scale;
+        transition-duration: 120ms;
+        transition-timing-function: var(--ease-out);
+      }
+
+      #preview-img {
+        transition-property: transform;
+        transition-duration: 150ms;
+        transition-timing-function: var(--ease-out);
+      }
+
+      button:active {
+        scale: 0.96;
+      }
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        transition: none !important;
+    @media (forced-colors: active) {
+      button:focus-visible,
+      .field input:focus-visible {
+        outline: 2px solid CanvasText;
+        outline-offset: 2px;
+        box-shadow: none;
+      }
+
+      .dir-well button.is-active {
+        outline: 2px solid Highlight;
       }
     }
   </style>
 </head>
-
 <body>
   <div class="app">
     <div class="field">
       <label for="angle">Angle</label>
-      <input id="angle" type="number" value="30" step="1" />
+      <input id="angle" type="number" inputmode="decimal" value="30" step="1" />
     </div>
 
-    <div class="preview-stage" id="preview-stage">
-      <div id="preview-fallback" class="fallback"></div>
+    <div class="preview-stage" id="preview-stage" role="img" aria-labelledby="preview-meta">
+      <p class="preview-empty" id="preview-empty">Select a layer to preview</p>
       <img id="preview-img" alt="" hidden />
-      <span id="preview-meta">Top left · 30°</span>
     </div>
+    <p class="preview-meta" id="preview-meta" role="status">Top left · 30°</p>
 
-    <div class="dir-well" id="direction-grid">
-      <button type="button" data-direction="top-left">
+    <div class="dir-well" id="direction-grid" role="group" aria-label="Projection">
+      <button type="button" data-direction="top-left" aria-pressed="true">
         <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
           <path d="M11.5 4.5H4.5V11.5" />
           <path d="M11.5 11.5L4.5 4.5" />
         </svg>
         Top left
       </button>
-      <button type="button" data-direction="top-right">
+      <button type="button" data-direction="top-right" aria-pressed="false">
         <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
           <path d="M4.5 4.5H11.5V11.5" />
           <path d="M4.5 11.5L11.5 4.5" />
         </svg>
         Top right
       </button>
-      <button type="button" data-direction="left">
+      <button type="button" data-direction="left" aria-pressed="false">
         <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
           <path d="M12 8H4" />
           <path d="M7 5L4 8L7 11" />
         </svg>
         Left
       </button>
-      <button type="button" data-direction="right">
+      <button type="button" data-direction="right" aria-pressed="false">
         <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
           <path d="M4 8H12" />
           <path d="M9 5L12 8L9 11" />
@@ -255,7 +290,7 @@
       </button>
     </div>
 
-    <button type="button" class="reset" id="reset">Reset</button>
+    <button type="button" class="reset" id="reset">Reset transform</button>
   </div>
 
   <script>
@@ -269,13 +304,14 @@
     const angleInput = document.getElementById("angle");
     const previewStage = document.getElementById("preview-stage");
     const previewImg = document.getElementById("preview-img");
-    const previewFallback = document.getElementById("preview-fallback");
+    const previewEmpty = document.getElementById("preview-empty");
     const previewMeta = document.getElementById("preview-meta");
     const directionButtons = document.querySelectorAll("[data-direction]");
 
     let committedDirection = "top-left";
     let previewDirection = "top-left";
     let previewUrl = null;
+    let hasLayerPreview = false;
 
     function readAngle() {
       const angle = parseFloat(angleInput.value);
@@ -325,7 +361,7 @@
       if (!previewImg.hidden && previewImg.naturalWidth > 0) {
         return { w: previewImg.naturalWidth, h: previewImg.naturalHeight, el: previewImg };
       }
-      return { w: 72, h: 56, el: previewFallback };
+      return null;
     }
 
     function updatePreview() {
@@ -336,6 +372,15 @@
       const b = matrix[1][0];
       const d = matrix[1][1];
       const size = sourceSize();
+      if (!size) {
+        previewMeta.textContent = DIRECTION_LABELS[previewDirection] + " · " + angle + "°";
+        directionButtons.forEach(function (button) {
+          const direction = button.getAttribute("data-direction");
+          button.classList.toggle("is-active", direction === previewDirection);
+          button.setAttribute("aria-pressed", direction === committedDirection ? "true" : "false");
+        });
+        return;
+      }
       const corners = [[0, 0], [size.w, 0], [size.w, size.h], [0, size.h]];
       let minX = Infinity;
       let minY = Infinity;
@@ -361,9 +406,7 @@
       const tx = (previewStage.clientWidth - boundsW * scale) / 2 - minX * scale;
       const ty = (previewStage.clientHeight - boundsH * scale) / 2 - minY * scale;
 
-      previewImg.style.transform = "none";
-      previewFallback.style.transform = "none";
-      size.el.style.transform =
+      previewImg.style.transform =
         "matrix(" +
         (a * scale) + ", " +
         (b * scale) + ", " +
@@ -375,7 +418,11 @@
       previewMeta.textContent = DIRECTION_LABELS[previewDirection] + " · " + angle + "°";
 
       directionButtons.forEach(function (button) {
-        button.classList.toggle("is-active", button.getAttribute("data-direction") === previewDirection);
+        const direction = button.getAttribute("data-direction");
+        const isPreview = direction === previewDirection;
+        const isCommitted = direction === committedDirection;
+        button.classList.toggle("is-active", isPreview);
+        button.setAttribute("aria-pressed", isCommitted ? "true" : "false");
       });
     }
 
@@ -391,9 +438,11 @@
       }
 
       if (!bytes || !bytes.byteLength) {
+        hasLayerPreview = false;
+        previewStage.classList.remove("has-layer");
         previewImg.hidden = true;
         previewImg.removeAttribute("src");
-        previewFallback.hidden = false;
+        previewEmpty.hidden = false;
         updatePreview();
         return;
       }
@@ -401,8 +450,10 @@
       const blob = new Blob([new Uint8Array(bytes)], { type: "image/png" });
       previewUrl = URL.createObjectURL(blob);
       previewImg.onload = function () {
+        hasLayerPreview = true;
+        previewStage.classList.add("has-layer");
         previewImg.hidden = false;
-        previewFallback.hidden = true;
+        previewEmpty.hidden = true;
         updatePreview();
       };
       previewImg.src = previewUrl;
@@ -412,6 +463,10 @@
       const direction = button.getAttribute("data-direction");
 
       button.addEventListener("pointerenter", function () {
+        setPreviewDirection(direction);
+      });
+
+      button.addEventListener("focus", function () {
         setPreviewDirection(direction);
       });
 
@@ -428,6 +483,12 @@
 
     document.getElementById("direction-grid").addEventListener("pointerleave", function () {
       setPreviewDirection(committedDirection);
+    });
+
+    document.getElementById("direction-grid").addEventListener("focusout", function (event) {
+      if (!event.currentTarget.contains(event.relatedTarget)) {
+        setPreviewDirection(committedDirection);
+      }
     });
 
     document.getElementById("reset").addEventListener("click", function () {
@@ -453,5 +514,4 @@
     updatePreview();
   </script>
 </body>
-
 </html>
